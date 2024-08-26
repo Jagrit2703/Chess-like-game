@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess-like Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        #board {
+            display: grid;
+            grid-template-columns: repeat(5, 50px);
+            grid-template-rows: repeat(5, 50px);
+            gap: 2px;
+        }
+        .cell {
+            width: 50px;
+            height: 50px;
+            background-color: lightgray;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        #controls, #history {
+            margin-top: 20px;
+        }
+        #turn {
+            margin-bottom: 20px;
+        }
+        #history {
+            max-width: 250px;
+            text-align: left;
+        }
+        #history h2 {
+            margin: 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
+        }
+        #game-over {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chess-like Game</h1>
+    <div id="turn">Player A's Turn</div>
+    <div id="board"></div>
+    <div id="controls"></div>
+    <div id="history">
+        <h2>Move History</h2>
+        <ul id="move-list"></ul>
+    </div>
+    <div id="game-over">
+        <h2 id="winner-message"></h2>
+        <button onclick="startNewGame()">Start New Game</button>
+    </div>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8080');
+
+        let gameState = null;
+        let selectedCharacter = null;
+
+        ws.onmessage = (message) => {
+            const msg = JSON.parse(message.data);
+
+            if (msg.type === 'init' || msg.type === 'update') {
+                gameState = msg.state;
+                renderBoard();
+                renderMoveHistory();
+                document.getElementById('turn').textContent = `Player ${gameState.turn}'s Turn`;
+            } else if (msg.type === 'invalid') {
+                alert('Invalid move, try again.');
+            } else if (msg.type === 'gameOver') {
+                document.getElementById('winner-message').textContent = `Player ${msg.winner} Wins!`;
+                document.getElementById('game-over').style.display = 'block';
+                document.getElementById('turn').style.display = 'none';
+            }
+        };
+
+        function renderBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+
+            for (let y = 0; y < 5; y++) {
+                for (let x = 0; x < 5; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    const character = gameState.board[y][x];
+                    if (character) {
+                        cell.textContent = character;
+                        cell.style.backgroundColor = character.startsWith('A') ? 'lightblue' : 'lightcoral';
+                        cell.onclick = () => selectCharacter(character);
+                    }
+                    boardElement.appendChild(cell);
+                }
+            }
+        }
+
+        function selectCharacter(character) {
+            selectedCharacter = character;
+            showControls();
+        }
+
+        function showControls() {
+            const controlsElement = document.getElementById('controls');
+            controlsElement.innerHTML = '';
+
+            const moves = selectedCharacter.includes('H2')
+                ? ['FL', 'FR', 'BL', 'BR']
+                : ['L', 'R', 'F', 'B'];
+
+            moves.forEach(move => {
+                const button = document.createElement('button');
+                button.textContent = move;
+                button.onclick = () => makeMove(move);
+                controlsElement.appendChild(button);
+            });
+        }
+
+        function makeMove(move) {
+            ws.send(JSON.stringify({
+                type: 'move',
+                player: selectedCharacter.startsWith('A') ? 'A' : 'B',
+                move: `${selectedCharacter}:${move}`
+            }));
+            selectedCharacter = null;
+            document.getElementById('controls').innerHTML = '';
+        }
+
+        function renderMoveHistory() {
+            const moveList = document.getElementById('move-list');
+            moveList.innerHTML = '';
+
+            gameState.moveHistory.forEach((move, index) => {
+                const li = document.createElement('li');
+                li.textContent = `${index + 1}. ${move}`;
+                moveList.appendChild(li);
+            });
+        }
+
+        function startNewGame() {
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('turn').style.display = 'block';
+            ws.send(JSON.stringify({ type: 'startNewGame' }));
+        }
+    </script>
+</body>
+</html>
