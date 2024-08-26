@@ -1,0 +1,41 @@
+# Chess-Like Game
+
+This is a chess-like game application developed in Javascript. It provides a simplified version of chess with specific modifications or rules.
+
+## Features
+
+- PAWN: 
+- HERO1:
+- HERO2:
+- ...
+
+## Installation
+
+1. Clone the repository: `git clone [https://github.com/Jagrit2703/JAGRIT-21BSA10015.git]`
+2. Navigate to the project directory: `cd chess-like-game`
+3. Install dependencies: `npm install` (or any other package manager you're using)
+
+## Usage
+
+1. Run the application: `nodemon server.js / node server.js`
+2. Pawn: Moves one block in any direction (Left, Right, Forward, or Backward).
+   Move commands: L (Left), R (Right), F (Forward), B (Backward)
+3. Hero1: Moves two blocks straight in any direction.Kills any opponent's character in its path.
+   Move commands: L (Left), R (Right), F (Forward), B (Backward)
+4. Hero2: Moves two blocks diagonally in any direction.Kills any opponent's character in its path.
+   Move commands: FL (Forward-Left), FR (Forward-Right), BL (Backward-Left), BR (Backward-Right)
+5. The game ends when one player eliminates other player's all characters
+
+## Contributing
+
+Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit them: `git commit -m 'Add your changes'`
+4. Push to the branch: `git push origin feature/your-feature-name`
+5. Open a pull request
+
+## Contact
+
+jagritpant201@gmail.com
