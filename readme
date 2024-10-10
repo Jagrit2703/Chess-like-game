@@ -10,7 +10,7 @@ This is a chess-like game application developed in Javascript. It provides a sim
 
 ## Installation
 
-1. Clone the repository: `git clone [https://github.com/Jagrit2703/JAGRIT-21BSA10015.git]`
+1. Clone the repository: `git clone [https://github.com/Jagrit2703/Chess-like-game.git]`
 2. Navigate to the project directory: `cd chess-like-game`
 3. Install dependencies: `npm install` (or any other package manager you're using)
 
